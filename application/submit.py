@@ -51,23 +51,29 @@ def submit_answers():
                 "username": user,
                 "data": {}
             }
-
+        deliver_score_datas=deliver_score_data.get('data', {})
         # 获取该用户所有训练类型的最大id
-        all_records = []
-        for training_type in deliver_score_data.get('data', {}):
-            all_records.extend(deliver_score_data['data'][training_type])
-        max_id = max([record.get('id', 0) for record in all_records], default=0)
-
+        max_id=0
+        for training_type in deliver_score_datas:
+            for record in deliver_score_datas[training_type]:
+                
+                if record["date"][:10]==date[:10]:
+                    max_id=max(int(record["id"]),max_id)
         new_id = max_id + 1
-
         # 这里需要确保date包含秒信息，假设前端传来的格式是'YYYY/MM/DD HH:MM:SS'
         current_date = datetime.strptime(date, '%Y/%m/%d %H:%M:%S')
 
-        # 统计所有模块的总分
-        total_score = 0
+        
+        value={
+            "失算症训练": { "data": 0 },
+            "思维障碍训练": { "data": 0 },
+            "注意障碍训练": { "data": 0 },
+            "知觉障碍训练": { "data": 0 },
+            "记忆障碍训练": { "data": 0 }
+        }
         for training_type in training_data:
             for record in training_data[training_type]["data"]:
-                total_score += int(record.get('value', 0))
+                value[training_type]["data"]+=int(record["value"])
 
         for training_type in training_data:
             if training_type not in deliver_score_data['data']:
@@ -84,10 +90,11 @@ def submit_answers():
             else:
                 new_record = {
                     "id": new_id,
-                    "value": str(total_score),
+                    "value": str(value[training_type]["data"]),
                     "date": current_date.strftime('%Y/%m/%d %H:%M:%S')
                 }
                 deliver_score_data['data'][training_type].append(new_record)
+            
 
         # 保存数据到deliver_score集合
         if deliver_score_collection.find_one({"username": user}):
@@ -95,7 +102,7 @@ def submit_answers():
         else:
             deliver_score_collection.insert_one(deliver_score_data)
 
-        return jsonify({"message": "答案提交成功，数据已分别保存到save和deliver_score集合"})
+        return jsonify({"message": "保存数据到MongoDB成功"})
 
     except Exception as e:
         logging.error(f"Error in submit_answers: {e}")
