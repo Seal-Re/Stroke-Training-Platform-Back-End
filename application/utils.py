@@ -1,7 +1,7 @@
 import logging
 from pymongo import MongoClient
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+#logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # 定义MongoDB数据库连接URL
 mongo_url = "mongodb://127.0.0.1:27017/"

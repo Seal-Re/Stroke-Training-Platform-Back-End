@@ -1,5 +1,5 @@
 from flask import Flask
-from config import config
+from application.config import config
 from .routes import main_bp
 from flask_cors import CORS
 

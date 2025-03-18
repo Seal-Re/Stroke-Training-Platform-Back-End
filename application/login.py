@@ -1,24 +1,64 @@
-from flask import Blueprint, request, jsonify
+import hashlib
+import uuid
+from flask import Blueprint, request, jsonify, make_response
 from .utils import users_collection
 
 login_bp = Blueprint('login', __name__)
 
+# 生成 MD5 哈希值
+def md5_hash(password):
+    md5 = hashlib.md5()
+    md5.update(password.encode('utf-8'))
+    return md5.hexdigest()
+
+# 生成令牌
+def generate_token():
+    return str(uuid.uuid4())
+
 # 登录
 @login_bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
 
-    # 直接从数据库中查找用户
-    user = users_collection.find_one({"username": username, "password": password})
+        if not username or not password:
+            response = {
+                "success": False,
+                "error": "用户名和密码均为必填项"
+            }
+            return make_response(jsonify(response), 400)
 
-    if user:
+        # 对用户输入的密码进行 MD5 加密
+        hashed_password = md5_hash(password)
+
+        # 从数据库中查找用户
+        user = users_collection.find_one({"username": username, "password": hashed_password})
+
+        if user:
+            # 生成令牌
+            token = generate_token()
+            response = {
+                "success": True,
+                "token": token,
+                "userInfo": {
+                    "username": user["username"]
+                    # 这里可以根据需要添加更多用户信息
+                }
+            }
+            status_code = 200
+        else:
+            response = {
+                "success": False,
+                "error": "用户名或密码错误"
+            }
+            status_code = 401
+    except Exception as err:
         response = {
-            "success": True,
+            "success": False,
+            "error": str(err)
         }
-    else:
-        response = {
-            "success": False
-        }
-    return jsonify(response)
+        status_code = 500
+
+    return make_response(jsonify(response), status_code)
