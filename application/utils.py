@@ -82,6 +82,7 @@ if client:
     deliver_score_collection = db['deliver_score']
     images_collection = db['images']
     aiTips_collection = db['aiTips']
+    userinfo_collection = db['userinfo']
 
     # 从MongoDB中读取
     users = read_mongo_data(users_collection)
