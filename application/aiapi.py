@@ -8,7 +8,7 @@ import json
 aiapi_bp = Blueprint('aiapi', __name__)
 
 
-@aiapi_bp.route('/api/ai', methods=['GET'])
+@aiapi_bp.route('/api/AI', methods=['GET'])
 def get_ai():
     username = request.args.get('username')
     if not username:
