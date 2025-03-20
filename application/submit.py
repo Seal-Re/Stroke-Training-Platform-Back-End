@@ -18,6 +18,7 @@ def submit_answers():
     score = submission_data.get('score')
     # 假设前端传来的日期已经精确到秒，这里直接使用
     date = submission_data.get('date')
+    scoreRates = data.get('scoreRates')  # 获取每类题目的得分率
 
     # 根据分数评判认知功能
     if 270 <= score <= 300:
@@ -40,7 +41,8 @@ def submit_answers():
         "answerResults": answerResults,
         "score": score,
         "date": date,
-        "认知功能": cognitive_function
+        "认知功能": cognitive_function,
+        "scoreRates": scoreRates  # 添加得分率信息
     }
 
     try:
@@ -99,7 +101,8 @@ def submit_answers():
                     "id": new_id,
                     "value": "0",
                     "date": current_date.strftime('%Y/%m/%d %H:%M:%S'),
-                    "认知功能": cognitive_function
+                    "认知功能": cognitive_function,
+                    "scoreRate": scoreRates.get(training_type, 0)  # 添加得分率信息
                 }
                 deliver_score_data['data'][training_type].append(new_record)
             else:
@@ -107,7 +110,8 @@ def submit_answers():
                     "id": new_id,
                     "value": str(value[training_type]["data"]),
                     "date": current_date.strftime('%Y/%m/%d %H:%M:%S'),
-                    "认知功能": cognitive_function
+                    "认知功能": cognitive_function,
+                    "scoreRate": scoreRates.get(training_type, 0)  # 添加得分率信息
                 }
                 deliver_score_data['data'][training_type].append(new_record)
 

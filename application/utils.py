@@ -81,9 +81,9 @@ if client:
     save_collection = db['save']
     deliver_score_collection = db['deliver_score']
     images_collection = db['images']
+    aiTips_collection = db['aiTips']
 
-    # 从MongoDB中读取用户信息
+    # 从MongoDB中读取
     users = read_mongo_data(users_collection)
-
-    # 从MongoDB中读取题目数据
     questions = read_mongo_data(questions_collection)
+    aiTips = read_mongo_data(aiTips_collection)
