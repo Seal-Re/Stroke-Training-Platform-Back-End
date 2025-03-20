@@ -78,13 +78,17 @@ if client:
     db = client['BackTest']
     users_collection = db['users']
     questions_collection = db['questions']
+    questions_train_collection = db['questions_train']
     save_collection = db['save']
     deliver_score_collection = db['deliver_score']
+    deliver_score_train_collection = db['deliver_score_train']
     images_collection = db['images']
     aiTips_collection = db['aiTips']
     userinfo_collection = db['userinfo']
 
+
     # 从MongoDB中读取
     users = read_mongo_data(users_collection)
     questions = read_mongo_data(questions_collection)
+    questions_train = read_mongo_data(questions_train_collection)
     aiTips = read_mongo_data(aiTips_collection)
