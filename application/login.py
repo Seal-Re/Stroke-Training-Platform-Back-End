@@ -43,7 +43,8 @@ def login():
                 "success": True,
                 "token": token,
                 "userInfo": {
-                    "username": user["username"]
+                    "username": user["username"],
+                    "class": user.get("class", 0)  # 获取用户的 class 字段，如果不存在则默认为 0
                     # 这里可以根据需要添加更多用户信息
                 }
             }

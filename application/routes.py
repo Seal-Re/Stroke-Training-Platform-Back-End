@@ -14,6 +14,9 @@ from .aiapi import aiapi_bp
 from .aiTips import aiTips_bp
 from .userinfoSubmit import userinfo_submit_bp
 from .userinfoGet import userinfo_get_bp   
+from .aiTrain import aiTrain_bp
+from .DoctorUserinfo import doctor_usersinfo_bp
+from .DoctorPair import doctor_pair_bp
 
 # 创建一个新的蓝图，用于整合所有的路由
 main_bp = Blueprint('main', __name__)
@@ -33,3 +36,6 @@ main_bp.register_blueprint(aiapi_bp)
 main_bp.register_blueprint(aiTips_bp)
 main_bp.register_blueprint(userinfo_submit_bp)
 main_bp.register_blueprint(userinfo_get_bp)
+main_bp.register_blueprint(aiTrain_bp)
+main_bp.register_blueprint(doctor_usersinfo_bp)
+main_bp.register_blueprint(doctor_pair_bp)

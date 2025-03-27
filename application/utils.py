@@ -85,7 +85,7 @@ if client:
     images_collection = db['images']
     aiTips_collection = db['aiTips']
     userinfo_collection = db['userinfo']
-
+    doctor_patient_collection = db['doctor_patient']
 
     # 从MongoDB中读取
     users = read_mongo_data(users_collection)

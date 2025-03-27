@@ -3,6 +3,7 @@ import logging
 from openai import OpenAI
 from .utils import deliver_score_collection, read_mongo_data, aiTips_collection, deliver_score_train_collection
 import json
+from .AIBase import api_key, base_url
 
 aiapi_bp = Blueprint('aiapi', __name__)
 
@@ -32,7 +33,7 @@ def get_ai():
 
     training_types = ["失算症训练", "思维障碍训练", "注意障碍训练", "知觉障碍训练", "记忆障碍训练"]
 
-    result += "评估数据:|evaluate:"
+    result = "评估数据:|evaluate:"
 
     for training_type in training_types:
         data = training_data_data.get(training_type, [])
@@ -91,26 +92,33 @@ def get_ai():
 
 
     try:
-        client = OpenAI(api_key="sk-9955b1dd98104518b3577a420fd3a2d2", base_url="https://api.deepseek.com")
+        client = OpenAI(api_key=api_key, base_url=base_url)
 
+        # 系统提示，明确 AI 的角色和回答要求
         messages = [
-            {"role": "system", "content": "You are a Chinese helpful doctor. You should speak Chinese."},
-            {"role": "user", "content": "请基于以下提供的类似 json 格式数据，对我的训练情况和病情进行分析，并给出训练建议。数据涵盖 5 种训练类型，每种训练类型下有多个训练记录，每个记录包含日期和得分率。请先分别评价训练数据和评估数据，再进行综合统筹，给出全面合理的建议 。"}
+            {
+                "role": "system",
+                "content": "你是一位和蔼可亲的中国医生，仅围绕用户提供的训练数据和病情相关内容进行分析，给出各个模块的评估分析和合理的训练建议。请避免引入无关的概念，如量子等。回答以病人为对象，避免引入过于高深的概念。回答使用中文。"
+            }
         ]
 
-        response = client.chat.completions.create(
-            model="deepseek-reasoner",
-            messages=messages,
-            stream=False
+        # 询问 AI 对训练数据和病情进行分析的请求
+        analysis_request = (
+            "请基于以下提供的类似 JSON 格式数据，对我的训练情况和病情进行分析，并给出训练建议。"
+            "数据涵盖 5 种训练类型，每种训练类型下有多个训练记录，每个记录包含日期和得分率。"
+            "请先分别评价训练数据和评估数据，再进行综合统筹，给出全面合理的建议。"
         )
+        messages.append({"role": "user", "content": analysis_request})
 
-        messages.append({"role": "assistant", "content": response.choices[0].message.content})
-        messages.append({"role": "user", "content": "What is the second?"})
         user_record = aiTips_collection.find_one({"username": username})
         if user_record and "data" in user_record and user_record["data"]:
+            # 获取上一次的建议
             last_ai_tip = user_record["data"][-1]["ai_tips"]
-            messages.append({"role": "assistant", "content": f"这是上一次你给的建议：{last_ai_tip}"})
-    
+            # 告知 AI 上一次的建议，让其在此基础上进行分析
+            previous_tip_message = f"这是上一次你给出的建议：{last_ai_tip}。请结合此次新数据继续分析。"
+            messages.append({"role": "assistant", "content": previous_tip_message})
+
+        # 提供最新的训练数据
         messages.append({"role": "user", "content": result})
 
         response = client.chat.completions.create(
@@ -136,6 +144,7 @@ def get_ai():
             aiTips_collection.insert_one({"username": username, "data": [new_data]})
 
         return jsonify({"message": response.choices[0].message.content})
+    
 
     except Exception as e:
         logging.error(f"Error calling OpenAI API: {e}")

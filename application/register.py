@@ -1,7 +1,7 @@
 import hashlib
 from flask import Blueprint, request, jsonify
 from .utils import users_collection  # 假设这里已经连接好数据库并获取到用户集合
-
+from .crypt import check
 # 生成 MD5 哈希值
 def md5_hash(password):
     md5 = hashlib.md5()
@@ -17,6 +17,7 @@ def register():
         data = request.get_json()
         username = data.get('username')
         password = data.get('password')
+        invitation_code = data.get('invitationCode')
 
         # 检查用户名和密码是否为空
         if not username or username == "":
@@ -32,10 +33,18 @@ def register():
         if existing_user:
             return jsonify({"success": False, "message": "Username already exists"})
 
+        user_class = 0
+        if invitation_code:
+            # 验证邀请码
+            if not check(invitation_code):
+                return jsonify({"success": False, "message": "Invalid invitation code"})
+            user_class = 1
+
         # 插入新用户到数据库
         new_user = {
             "username": username,
-            "password": hashed_password
+            "password": hashed_password,
+            "class": user_class
         }
         result = users_collection.insert_one(new_user)
 
@@ -45,3 +54,4 @@ def register():
             return jsonify({"success": False, "message": "Error saving user"})
     except Exception as e:
         return jsonify({"success": False, "message": f"An unexpected error occurred: {str(e)}"})
+    
