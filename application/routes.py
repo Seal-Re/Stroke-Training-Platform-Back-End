@@ -17,8 +17,10 @@ from .userinfoGet import userinfo_get_bp
 from .aiTrain import aiTrain_bp
 from .DoctorUserinfo import doctor_usersinfo_bp
 from .DoctorPair import doctor_pair_bp
+from .DoctorPatientScore import doctor_patient_score_bp
+from .DoctorPatientInfo import doctor_patient_info_bp
 
-# 创建一个新的蓝图，用于整合所有的路由
+# 创建一个新的蓝图，用于整合所有的路由*
 main_bp = Blueprint('main', __name__)
 
 # 注册所有的蓝图
@@ -39,3 +41,5 @@ main_bp.register_blueprint(userinfo_get_bp)
 main_bp.register_blueprint(aiTrain_bp)
 main_bp.register_blueprint(doctor_usersinfo_bp)
 main_bp.register_blueprint(doctor_pair_bp)
+main_bp.register_blueprint(doctor_patient_score_bp)
+main_bp.register_blueprint(doctor_patient_info_bp)
