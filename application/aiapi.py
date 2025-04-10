@@ -14,43 +14,7 @@ def get_ai():
     if not username:
         return jsonify({"message": "Missing username parameter"}), 400
 
-    try:
-        data = deliver_score_collection.find_one({"username": username}, {"_id": 0})
-        if data:
-            training_data = data.copy()
-            training_data.pop("username", None)
-        else:
-            logging.warning(f"No data found for user: {username}")
-            return jsonify({"message": f"No data found for user: {username}"}), 404
-    except Exception as e:
-        logging.error(f"Error getting deliver score data: {e}")
-        return jsonify({"message": f"Error getting deliver score data: {str(e)}"}), 500
-
-    training_data_data = training_data.get("data")
-    if not training_data_data:
-        logging.warning(f"No training data found for user: {username}")
-        return jsonify({"message": f"No training data found for user: {username}"}), 404
-
-    training_types = ["失算症训练", "思维障碍训练", "注意障碍训练", "知觉障碍训练", "记忆障碍训练"]
-
-    result = "评估数据:|evaluate:"
-
-    for training_type in training_types:
-        data = training_data_data.get(training_type, [])
-        pairs = []
-        for item in data:
-            score_rate = item.get("scoreRate", 0)
-            pair = {
-                "date": item.get("date"),
-                "scoreRate": score_rate
-            }
-            pairs.append(pair)
-        result += f"{training_type}"
-        result += json.dumps(pairs, separators=(',', ':'), ensure_ascii=False)
-        result += "|"
-
-    result = result.rstrip("|")
-
+    result = "评估数据:|"
 
     try:
         data = deliver_score_train_collection.find_one({"username": username}, {"_id": 0})
@@ -93,7 +57,7 @@ def get_ai():
 
     try:
         client = OpenAI(api_key=api_key, base_url=base_url)
-
+        MAX_HISTORY_LENGTH = 10
         # 系统提示，明确 AI 的角色和回答要求
         messages = [
             {
@@ -122,7 +86,7 @@ def get_ai():
         messages.append({"role": "user", "content": result})
 
         response = client.chat.completions.create(
-            model="deepseek-reasoner",
+            model="deepseek-r1:671b",
             messages=messages,
             stream=False
         )
