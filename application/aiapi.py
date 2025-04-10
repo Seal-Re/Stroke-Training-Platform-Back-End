@@ -14,7 +14,11 @@ def get_ai():
     if not username:
         return jsonify({"message": "Missing username parameter"}), 400
 
-    result = "评估数据:|"
+    
+
+    result = ""
+
+
 
     try:
         data = deliver_score_train_collection.find_one({"username": username}, {"_id": 0})
@@ -57,7 +61,7 @@ def get_ai():
 
     try:
         client = OpenAI(api_key=api_key, base_url=base_url)
-        MAX_HISTORY_LENGTH = 10
+
         # 系统提示，明确 AI 的角色和回答要求
         messages = [
             {
@@ -86,7 +90,7 @@ def get_ai():
         messages.append({"role": "user", "content": result})
 
         response = client.chat.completions.create(
-            model="deepseek-r1:671b",
+            model="deepseek-reasoner",
             messages=messages,
             stream=False
         )
