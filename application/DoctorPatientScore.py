@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 import logging
-from .utils import doctor_patient_collection, deliver_score_collection
+from .utils import doctor_patient_collection, deliver_score_train_collection
+
 
 # 创建蓝图
 doctor_patient_score_bp = Blueprint('doctor_patient_score', __name__)
@@ -26,7 +27,7 @@ def doctor_patient_score():
         for patient_username in patient_usernames:
             # 根据病人用户名从 deliver_score 集合中查找最后一条记录
             # 假设集合中有一个时间字段（如 timestamp）用于排序
-            last_record = deliver_score_collection.find_one(
+            last_record = deliver_score_train_collection.find_one(
                 {"username": patient_username},
                 sort=[("timestamp", -1)]
             )
