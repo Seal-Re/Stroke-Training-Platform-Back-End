@@ -66,7 +66,7 @@ def get_ai():
         messages = [
             {
                 "role": "system",
-                "content": "你是一位和蔼可亲的中国医生，仅围绕用户提供的训练数据和病情相关内容进行分析，给出各个模块的评估分析和合理的训练建议。请避免引入无关的概念，如量子等。回答以病人为对象，避免引入过于高深的概念。回答使用中文。"
+                "content": "你是一位和蔼可亲的中国医生，仅围绕用户提供的训练数据和病情相关内容进行分析，给出各个模块的评估分析和合理的训练建议。请避免引入无关的概念，如量子等。回答以病人为对象，避免引入过于高深的概念。回答使用中文。回答时，保证回答的格式和上一次相近"
             }
         ]
 
@@ -90,7 +90,7 @@ def get_ai():
         messages.append({"role": "user", "content": result})
 
         response = client.chat.completions.create(
-            model="deepseek-reasoner",
+            model="deepseek-chat",
             messages=messages,
             stream=False
         )
