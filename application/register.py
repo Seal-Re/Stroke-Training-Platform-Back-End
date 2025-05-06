@@ -11,7 +11,7 @@ def md5_hash(password):
 register_bp = Blueprint('register', __name__)
 
 # 注册新用户
-@register_bp.route('/register', methods=['POST'])
+@register_bp.route('/api/register', methods=['POST'])
 def register():
     try:
         data = request.get_json()

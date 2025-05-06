@@ -4,7 +4,7 @@ from io import BytesIO
 
 images_bp = Blueprint('images', __name__)
 
-@images_bp.route('/images_data/', methods=['GET'])
+@images_bp.route('/api/images_data/', methods=['GET'])
 def get_image():
     # 从请求参数中获取图片名
     image_name = request.args.get('name')

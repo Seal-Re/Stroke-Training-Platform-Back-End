@@ -16,7 +16,7 @@ def generate_token():
     return str(uuid.uuid4())
 
 # 登录
-@login_bp.route('/login', methods=['POST'])
+@login_bp.route('/api/login', methods=['POST'])
 def login():
     try:
         data = request.get_json()
