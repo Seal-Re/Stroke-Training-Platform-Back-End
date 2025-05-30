@@ -19,6 +19,7 @@ from .DoctorUserinfo import doctor_usersinfo_bp
 from .DoctorPair import doctor_pair_bp
 from .DoctorPatientScore import doctor_patient_score_bp
 from .DoctorPatientInfo import doctor_patient_info_bp
+from .TTS import audio_bp
 
 # 创建一个新的蓝图，用于整合所有的路由*
 main_bp = Blueprint('main', __name__)
@@ -43,3 +44,4 @@ main_bp.register_blueprint(doctor_usersinfo_bp)
 main_bp.register_blueprint(doctor_pair_bp)
 main_bp.register_blueprint(doctor_patient_score_bp)
 main_bp.register_blueprint(doctor_patient_info_bp)
+main_bp.register_blueprint(audio_bp)
